@@ -1,0 +1,42 @@
+
+variable T equal 340
+# T = 1000* (temp in LJ unit)
+variable f equal 1000
+log log.${T}
+variable TLJ equal (${T}/1000)
+variable NCyle equal 10
+variable iStep equal (${f})
+variable dumpStep equal (${f}*100)
+variable runStep equal (${f}*100*${NCyle})
+
+units       lj
+atom_style  atomic
+dimension 3
+boundary     p p p
+pair_style  lj/cut 2.5
+read_data  ../data/T${T}.dat
+change_box all triclinic
+mass 1 1
+mass 2 1
+pair_modify shift yes
+pair_coeff  1 1 1 1
+pair_coeff  1 2 1.5 0.8
+pair_coeff  2 2 0.5 0.88
+
+
+timestep 0.01
+thermo ${iStep}
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt temp ${TLJ}  ${TLJ}  0.1
+thermo_modify flush yes
+
+fix dsf all deform 1 xy  wiggle 0.5  ${f}   units box 
+fix ps1 all ave/time 1 1 ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+dump            1 all custom ${dumpStep} dump.${T} id type x y z
+dump_modify 1 sort id
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+run ${runStep}
+clear
+jump dms320.lmp
