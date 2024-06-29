@@ -1,0 +1,41 @@
+#MD-DMS by Ha-Bin Yu
+
+#package gpu 1 gpuID  0
+variable T equal 1400
+log log.${T}
+dimension 2
+variable f equal 1000
+variable NCyle equal 5
+variable iStep equal (${f})
+variable dumpStep equal (${f}*100)
+variable runStep equal (${f}*100*${NCyle})
+variable aveStep equal ceil(${iStep}/100)
+
+log log.${T}
+units              metal
+boundary           p p p
+atom_style         atomic
+read_data       ../../../data/T${T}.dat
+change_box all triclinic
+mass            1  26.98    #Al
+mass            2  150.36   #Sm
+pair_style      eam/fs
+pair_coeff      * *  ../../../Al90Sm10_MendelevM_2014.eam.fs  Al Sm
+velocity all create ${T} ${R}
+neighbor        2.0 bin
+neigh_modify    delay 1
+
+timestep 0.01
+thermo ${iStep}
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt temp ${T} ${T}  0.1
+thermo_modify flush yes
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+fix dsf all deform 1 xy  wiggle 2.0  ${f}   units box 
+fix ps1 all ave/time 1 ${aveStep}  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+dump            1 all custom ${dumpStep} dump.${T} id type x y z
+dump_modify 1 sort id
+fix 5 all enforce2d
+run ${runStep}

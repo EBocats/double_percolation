@@ -1,0 +1,7 @@
+units              metal
+boundary           p p p
+atom_style         atomic
+read_data       ../../../data/T${T}.dat
+read_data       ../../../data/T510.dat
+ERROR: Cannot open file ../../../data/T510.dat: No such file or directory (src/read_data.cpp:367)
+Last command: read_data       ../../../data/T${T}.dat

@@ -1,0 +1,5 @@
+# Time-averaged data for fix ps1
+# TimeStep c_thermo_press[1] c_thermo_press[2] c_thermo_press[3] c_thermo_press[4] c_thermo_press[5] c_thermo_press[6]
+1000 310182 306971 0 -1287.56 0 0
+2000 310924 306911 0 -489.969 0 0
+3000 310174 306575 0 -1721.21 0 0

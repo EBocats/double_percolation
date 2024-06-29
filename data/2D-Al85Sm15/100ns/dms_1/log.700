@@ -1,0 +1,85 @@
+units              metal
+boundary           p p p
+atom_style         atomic
+read_data       ../../../data/T${T}.dat
+read_data       ../../../data/T700.dat
+Reading data file ...
+  orthogonal box = (0 0 -0.365) to (219 219 0.365)
+  6 by 6 by 1 MPI processor grid
+  reading atoms ...
+  7200 atoms
+  reading velocities ...
+  7200 velocities
+  read_data CPU = 0.035 seconds
+change_box all triclinic
+Changing box ...
+  triclinic box = (0 0 -0.365) to (219 219 0.365) with tilt (0 0 0)
+mass            1  26.98    #Al
+mass            2  150.36   #Sm
+pair_style      eam/fs
+pair_coeff      * *  ../../../Al90Sm10_MendelevM_2014.eam.fs  Al Sm
+velocity all create ${T} ${R}
+velocity all create 700 ${R}
+velocity all create 700 79415
+neighbor        2.0 bin
+neigh_modify    delay 1
+
+timestep 0.01
+thermo ${iStep}
+thermo 100000
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt temp ${T} ${T}  0.1
+fix             1 all nvt temp 700 ${T}  0.1
+fix             1 all nvt temp 700 700  0.1
+thermo_modify flush yes
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+fix dsf all deform 1 xy  wiggle 2.0  ${f}   units box
+fix dsf all deform 1 xy  wiggle 2.0  100000   units box
+fix ps1 all ave/time 1 ${aveStep}  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 1000  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 1000  100000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 1000  100000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.700
+dump            1 all custom ${dumpStep} dump.${T} id type x y z
+dump            1 all custom 10000000 dump.${T} id type x y z
+dump            1 all custom 10000000 dump.700 id type x y z
+dump_modify 1 sort id
+fix 5 all enforce2d
+run ${runStep}
+run 50000000
+----------------------------------------------------------
+Using INTEL Package without Coprocessor.
+Compiler: Intel Classic C++ 19.10.0 / Intel(R) C++ g++ 4.8.5 mode
+SIMD compiler directives: Enabled
+Precision: mixed
+----------------------------------------------------------
+Neighbor list info ...
+  update: every = 1 steps, delay = 1 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 10
+  ghost atom cutoff = 10
+  binsize = 5, bins = 44 44 1
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/fs/intel, perpetual
+      attributes: half, newton on, intel
+      pair build: half/bin/newton/tri/intel
+      stencil: half/bin/2d/tri
+      bin: intel
+Per MPI rank memory allocation (min/avg/max) = 6.267 | 6.31 | 6.376 Mbytes
+   Step          Temp          PotEng         TotEng         Press          Volume           Lx             Ly             Lz      
+         0   700           -20953.777     -20519.523      356115.41      47961          219            219            0.73         
+    100000   701.75638     -20918.866     -20483.522      360137.55      47961          219            219            0.73         
+    200000   706.7648      -20928.642     -20490.192      359314.03      47961          219            219            0.73         
+    300000   697.28681     -20927.748     -20495.177      358895.39      47961          219            219            0.73         
+    400000   692.38034     -20923.698     -20494.172      359039.36      47961          219            219            0.73         
+    500000   703.0152      -20925.036     -20488.912      359254.13      47961          219            219            0.73         
+    600000   690.30445     -20921.05      -20492.811      359670.72      47961          219            219            0.73         
+    700000   696.22154     -20911.236     -20479.326      360964.14      47961          219            219            0.73         
+    800000   694.59483     -20922.659     -20491.758      358755.72      47961          219            219            0.73         
+    900000   695.48281     -20922.709     -20491.257      359581.56      47961          219            219            0.73         
+   1000000   705.65923     -20928.92      -20491.155      358488.88      47961          219            219            0.73         
+   1100000   692.7875      -20928.395     -20498.615      358456.26      47961          219            219            0.73         
+   1200000   702.10999     -20932.682     -20497.12       357365.35      47961          219            219            0.73         
+ERROR: Lost atoms: original 7200 current 0 (../thermo.cpp:482)
+Last command: run ${runStep}

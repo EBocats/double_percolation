@@ -1,0 +1,125 @@
+units              metal
+boundary           p p p
+atom_style         atomic
+read_data       ../../../data/T${T}.dat
+read_data       ../../../data/T200.dat
+Reading data file ...
+  orthogonal box = (0 0 -0.365) to (219 219 0.365)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  7200 atoms
+  reading velocities ...
+  7200 velocities
+  read_data CPU = 0.083 seconds
+change_box all triclinic
+Changing box ...
+  triclinic box = (0 0 -0.365) to (219 219 0.365) with tilt (0 0 0)
+mass            1  26.98    #Al
+mass            2  150.36   #Sm
+pair_style      eam/fs
+pair_coeff      * *  ../../../Al90Sm10_MendelevM_2014.eam.fs  Al Sm
+velocity all create ${T} ${R}
+velocity all create 200 ${R}
+velocity all create 200 44985
+neighbor        2.0 bin
+neigh_modify    delay 1
+
+timestep 0.01
+thermo ${iStep}
+thermo 1000
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt temp ${T} ${T}  0.1
+fix             1 all nvt temp 200 ${T}  0.1
+fix             1 all nvt temp 200 200  0.1
+thermo_modify flush yes
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+fix dsf all deform 1 xy  wiggle 2.0  ${f}   units box
+fix dsf all deform 1 xy  wiggle 2.0  1000   units box
+fix ps1 all ave/time 1 ${aveStep}  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 10  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 10  1000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 10  1000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.200
+dump            1 all custom ${dumpStep} dump.${T} id type x y z
+dump            1 all custom 100000 dump.${T} id type x y z
+dump            1 all custom 100000 dump.200 id type x y z
+dump_modify 1 sort id
+fix 5 all enforce2d
+run ${runStep}
+run 500000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- GPU package (short-range, long-range and three-body potentials): doi:10.1016/j.cpc.2010.12.021, doi:10.1016/j.cpc.2011.10.012, doi:10.1016/j.cpc.2013.08.002, doi:10.1016/j.commatsci.2014.10.068, doi:10.1016/j.cpc.2016.10.020, doi:10.3233/APC200086
+
+@Article{Brown11,
+ author = {W. M. Brown and P. Wang and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Short Range Forces},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2011,
+ volume =  182,
+ pages =   {898--911},
+ doi =     {10.1016/j.cpc.2010.12.021}
+}
+
+@Article{Brown12,
+ author = {W. M. Brown and A. Kohlmeyer and S. J. Plimpton and A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Particle-Particle Particle-Mesh},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2012,
+ volume =  183,
+ doi =     {10.1016/j.cpc.2011.10.012},
+ pages =   {449--459}
+}
+
+@Article{Brown13,
+ author = {W. M. Brown and Y. Masako},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers---Three-Body Potentials},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2013,
+ volume =  184,
+ pages =   {2785--2793},
+ doi =     {10.1016/j.cpc.2013.08.002},
+}
+
+@Article{Trung15,
+ author = {T. D. Nguyen and S. J. Plimpton},
+ title = {Accelerating Dissipative Particle Dynamics Simulations for Soft Matter Systems},
+ journal = {Comput.\ Mater.\ Sci.},
+ year =    2015,
+ doi =     {10.1016/j.commatsci.2014.10.068},
+ volume =  100,
+ pages =   {173--180}
+}
+
+@Article{Trung17,
+ author = {T. D. Nguyen},
+ title = {{GPU}-Accelerated {T}ersoff Potentials for Massively Parallel
+    Molecular Dynamics Simulations},
+ journal = {Comput.\ Phys.\ Commun.},
+ year =    2017,
+ doi =     {10.1016/j.cpc.2016.10.020},
+ volume =  212,
+ pages =   {113--122}
+}
+
+@inproceedings{Nikolskiy19,
+ author = {V. Nikolskiy and V. Stegailov},
+ title = {{GPU} Acceleration of Four-Site Water Models in {LAMMPS}},
+ booktitle = {Proceedings of the International Conference on Parallel
+    Computing (ParCo 2019), Prague, Czech Republic},
+ doi =     {10.3233/APC200086},
+ year =    2019
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Per MPI rank memory allocation (min/avg/max) = 2.808 | 2.808 | 2.808 Mbytes
+   Step          Temp          PotEng         TotEng         Press          Volume           Lx             Ly             Lz      
+         0   200           -21274.969     -21150.897      307644.31      47961          219            219            0.73         
+      1000   199.28627     -21267.735     -21144.105      308674.15      47961          219            219            0.73         
+      2000   199.03393     -21266.97      -21143.497      309105.06      47961          219            219            0.73         
+      3000   197.21539     -21266.833     -21144.488      308771.3       47961          219            219            0.73         

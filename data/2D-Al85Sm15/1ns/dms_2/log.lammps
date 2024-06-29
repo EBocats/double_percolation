@@ -1,0 +1,10 @@
+LAMMPS (2 Aug 2023 - Maintenance - lammps-gui-v1.2)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+package gpu 0
+#MD-DMS by Ha-Bin Yu
+
+#package gpu 1 gpuID  0
+variable T equal 510
+log log.${T}
+log log.510
