@@ -1,0 +1,11 @@
+LAMMPS (23 Jun 2022 - Update 1)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+Open of file /opt/app/anaconda3/envs/deepmd/lib/deepmd_lmp/dpplugin.so failed: libdeepmd_cc.so: cannot open shared object file: No such file or directory
+Loaded 0 plugins from /opt/app/anaconda3/envs/deepmd/lib/deepmd_lmp
+Loaded 0 plugins from 
+package intel 1
+#MD-DMS by Ha-Bin Yu
+variable T equal 799
+log log.${T}
+log log.799
