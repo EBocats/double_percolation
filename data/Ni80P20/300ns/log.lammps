@@ -1,0 +1,5 @@
+LAMMPS (10 Aug 2015)
+WARNING: OMP_NUM_THREADS environment is not set. (../comm.cpp:89)
+  using 1 OpenMP thread(s) per MPI task
+#Gen by HaiBin Yu using python.2014-10-06
+log YDMA575-300ns.log

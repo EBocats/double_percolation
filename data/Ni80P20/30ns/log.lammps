@@ -1,0 +1,15 @@
+LAMMPS (19 Sep 2019)
+
+WARNING-WARNING-WARNING-WARNING-WARNING
+This LAMMPS executable was compiled using C++98 compatibility.
+Please report the compiler info below at https://github.com/lammps/lammps/issues/1659
+Intel C++ Intel(R) C++ g++ 4.8.5 mode
+WARNING-WARNING-WARNING-WARNING-WARNING
+
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (../comm.cpp:93)
+  using 1 OpenMP thread(s) per MPI task
+package intel 1
+#MD-DMS by Ha-Bin Yu
+variable T equal 600
+log log.${T}
+log log.600

@@ -1,0 +1,25 @@
+#Gen by HaiBin Yu using python.2014-10-06
+log YDMA490-300ns.log
+units           metal
+boundary        p p p
+atom_style      atomic
+read_data      /HOME/hust_hbyu_1/Samples/Ni80P20_C20/dat/T490.dat
+pair_style      eam/alloy
+pair_coeff      * *   /HOME/hust_hbyu_1/Samples/Ni80P20_C20/dat/NiP.lammps.eam Ni P
+mass            1  58.69
+mass			2  30.97
+neigh_modify    delay 5
+timestep 0.01
+thermo 100000
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt temp 490 490 0.5
+thermo_modify flush yes
+fix dsf all deform 1 x  wiggle 0.5    300000.0   y volume z volume units box 
+fix ps1 all ave/time 1 1 300000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  YDMA490K-stress-300ns.txt
+dump            1 all custom 10000000 YDMA490K-300ns.lammpstrj id type x y z
+dump_modify 1 sort id
+run 150000000
+write_restart  dms300ns_490-10c.rst
+clear 
+#jump YDMA510-300ns.lmp
