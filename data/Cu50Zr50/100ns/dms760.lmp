@@ -1,0 +1,29 @@
+#MD-DMS by Ha-Bin Yu
+#package gpu 4
+variable T equal 760
+log log.${T}
+units           metal
+boundary        p p p
+atom_style      atomic
+read_data      ../../restart/T${T}.dat   
+pair_style      eam/alloy
+pair_coeff      * *  ../../ZrCu.lammps.eam Zr Cu
+mass 1 91.224
+mass 2 63.546
+neighbor            2.0 bin
+neigh_modify     delay 1
+timestep 0.01
+thermo 100000
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt temp ${T} ${T} 0.1
+thermo_modify flush yes
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+fix dsf all deform 1 x  wiggle 1.0  100000.0 y volume z volume units box
+fix ps1 all ave/time 1 1 100000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+dump            1 all custom 10000000 dump.${T} id type x y z
+dump_modify 1 sort id
+run 100000000
+clear
+jump dms770.lmp
