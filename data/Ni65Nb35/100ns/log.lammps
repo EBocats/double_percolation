@@ -1,0 +1,20 @@
+LAMMPS (29 Oct 2020)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (../comm.cpp:94)
+  using 1 OpenMP thread(s) per MPI task
+package intel 1
+#MD-DMS by Hai-Bin Yu
+variable T equal 320
+variable f equal 10000
+variable NCyle equal 5 #10
+variable iStep equal (${f})
+variable iStep equal (10000)
+variable dumpStep equal (${f}*100)
+variable dumpStep equal (10000*100)
+variable runStep equal (${f}*100*${NCyle})
+variable runStep equal (10000*100*${NCyle})
+variable runStep equal (10000*100*5)
+variable aveStep equal ceil(${iStep}/100)
+variable aveStep equal ceil(10000/100)
+
+log  log.${T}
+log  log.320

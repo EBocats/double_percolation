@@ -1,0 +1,127 @@
+units           metal
+boundary        p p p
+atom_style      atomic
+read_data    ../../data/data.T${T}
+read_data    ../../data/data.T715
+Reading data file ...
+  triclinic box = (6.0791252 6.0791252 6.0791252) to (55.851813 55.851813 55.851813) with tilt (-5.7104934e-15 0 0)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  9088 atoms
+  reading velocities ...
+  9088 velocities
+  read_data CPU = 0.062 seconds
+mass            1   58.693  #Ni
+mass            2   92.906  #Nb
+pair_style      eam/fs
+pair_coeff      * * v1_18_NiNb_B2.eam.fs  Ni Nb
+change_box all triclinic
+Changing box ...
+  triclinic box = (6.0791252 6.0791252 6.0791252) to (55.851813 55.851813 55.851813) with tilt (-5.7104934e-15 0 0)
+timestep 0.01
+thermo ${iStep}
+thermo 10000
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt/sllod temp ${T} ${T}  0.1
+fix             1 all nvt/sllod temp 715 ${T}  0.1
+fix             1 all nvt/sllod temp 715 715  0.1
+thermo_modify flush yes
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+fix dsf all deform 1 xy  wiggle 1.0  ${f}   units box  remap v
+fix dsf all deform 1 xy  wiggle 1.0  10000   units box  remap v
+fix ps1 all ave/time 1 ${aveStep}  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 100  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 100  10000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 100  10000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.715
+dump            1 all custom ${dumpStep} dump.${T} id type x y z
+dump            1 all custom 1000000 dump.${T} id type x y z
+dump            1 all custom 1000000 dump.715 id type x y z
+dump_modify 1 sort id
+run ${runStep}
+run 5000000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- GPU package (short-range, long-range and three-body potentials):
+
+@Article{Brown11,
+ author = {W. M. Brown, P. Wang, S. J. Plimpton, A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Short Range Forces},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2011,
+ volume =  182,
+ pages =   {898--911}
+}
+
+@Article{Brown12,
+ author = {W. M. Brown, A. Kohlmeyer, S. J. Plimpton, A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Particle-Particle Particle-Mesh},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2012,
+ volume =  183,
+ pages =   {449--459}
+}
+
+@Article{Brown13,
+ author = {W. M. Brown, Y. Masako},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers – Three-Body Potentials},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2013,
+ volume =  184,
+ pages =   {2785--2793}
+}
+
+@Article{Trung15,
+ author = {T. D. Nguyen, S. J. Plimpton},
+ title = {Accelerating dissipative particle dynamics simulations for soft matter systems},
+ journal = {Comput.~Mater.~Sci.},
+ year =    2015,
+ volume =  100,
+ pages =   {173--180}
+}
+
+@Article{Trung17,
+ author = {T. D. Nguyen},
+ title = {GPU-accelerated Tersoff potentials for massively parallel Molecular Dynamics simulations},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2017,
+ volume =  212,
+ pages =   {113--122}
+}
+
+@Article{Nikolskiy19,
+ author = {V. Nikolskiy, V. Stegailov},
+ title = {GPU acceleration of four-site water models in LAMMPS},
+ journal = {Proceeding of the International Conference on Parallel Computing (ParCo 2019), Prague, Czech Republic},
+ year =    2019
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.9
+  ghost atom cutoff = 8.9
+  binsize = 4.45, bins = 12 12 12
+  0 neighbor lists, perpetual/occasional/extra = 0 0 0
+Per MPI rank memory allocation (min/avg/max) = 7.682 | 7.682 | 7.682 Mbytes
+   Step          Temp          PotEng         TotEng         Press          Volume           Lx             Ly             Lz      
+         0   726.54518     -56122.273     -55268.882     -1574.6658      123302.89      49.772687      49.772687      49.772687    
+     10000   719.5762      -56083.718     -55238.514      126.16064      123302.89      49.772687      49.772687      49.772687    
+     20000   707.32041     -56061.196     -55230.387      308.76128      123302.89      49.772687      49.772687      49.772687    
+     30000   720.68222     -56099.936     -55253.432     -707.14507      123302.89      49.772687      49.772687      49.772687    
+     40000   718.52441     -56075.208     -55231.239      240.05762      123302.89      49.772687      49.772687      49.772687    
+     50000   700.29062     -56077.315     -55254.762      278.45961      123302.89      49.772687      49.772687      49.772687    
+     60000   715.70899     -56092.516     -55251.853     -310.98542      123302.89      49.772687      49.772687      49.772687    
+     70000   710.06212     -56071.746     -55237.717      271.24784      123302.89      49.772687      49.772687      49.772687    
+     80000   716.01706     -56083.225     -55242.201      42.519843      123302.89      49.772687      49.772687      49.772687    
+     90000   714.31592     -56088.553     -55249.527     -11.795018      123302.89      49.772687      49.772687      49.772687    
+    100000   708.64551     -56092.275     -55259.909     -108.89717      123302.89      49.772687      49.772687      49.772687    
+    110000   721.28405     -56084.874     -55237.663     -640.88989      123302.89      49.772687      49.772687      49.772687    
+    120000   713.16588     -56070.885     -55233.21      -120.01246      123302.89      49.772687      49.772687      49.772687    
+    130000   716.88139     -56096.153     -55254.113     -461.67704      123302.89      49.772687      49.772687      49.772687    

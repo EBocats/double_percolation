@@ -1,0 +1,18 @@
+LAMMPS (23 Jun 2022 - Update 1)
+package gpu 0
+#MD-DMS by Hai-Bin Yu
+variable T equal 660
+variable f equal 1000000
+variable NCyle equal 5 #10
+variable iStep equal (${f})
+variable iStep equal (1000000)
+variable dumpStep equal (${f}*100)
+variable dumpStep equal (1000000*100)
+variable runStep equal (${f}*100*${NCyle})
+variable runStep equal (1000000*100*${NCyle})
+variable runStep equal (1000000*100*5)
+variable aveStep equal ceil(${iStep}/100)
+variable aveStep equal ceil(1000000/100)
+
+log  log.${T}
+log  log.660

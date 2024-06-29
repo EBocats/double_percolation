@@ -1,0 +1,163 @@
+units           metal
+boundary        p p p
+atom_style      atomic
+read_data    ../../data/data.T${T}
+read_data    ../../data/data.T850
+Reading data file ...
+  triclinic box = (6.0587349 6.0587349 6.0587349) to (55.872203 55.872203 55.872203) with tilt (-5.7151723e-15 0 0)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  9088 atoms
+  reading velocities ...
+  9088 velocities
+  read_data CPU = 0.092 seconds
+mass            1   58.693  #Ni
+mass            2   92.906  #Nb
+pair_style      eam/fs
+pair_coeff      * * v1_18_NiNb_B2.eam.fs  Ni Nb
+change_box all triclinic
+Changing box ...
+  triclinic box = (6.0587349 6.0587349 6.0587349) to (55.872203 55.872203 55.872203) with tilt (-5.7151723e-15 0 0)
+timestep 0.01
+thermo ${iStep}
+thermo 1000000
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt/sllod temp ${T} ${T}  0.1
+fix             1 all nvt/sllod temp 850 ${T}  0.1
+fix             1 all nvt/sllod temp 850 850  0.1
+thermo_modify flush yes
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+fix dsf all deform 1 xy  wiggle 1.0  ${f}   units box  remap v
+fix dsf all deform 1 xy  wiggle 1.0  1000000   units box  remap v
+fix ps1 all ave/time 1 ${aveStep}  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 10000  ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 10000  1000000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 10000  1000000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.850
+dump            1 all custom ${dumpStep} dump.${T} id type x y z
+dump            1 all custom 100000000 dump.${T} id type x y z
+dump            1 all custom 100000000 dump.850 id type x y z
+dump_modify 1 sort id
+run ${runStep}
+run 500000000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- GPU package (short-range, long-range and three-body potentials):
+
+@Article{Brown11,
+ author = {W. M. Brown, P. Wang, S. J. Plimpton, A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Short Range Forces},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2011,
+ volume =  182,
+ pages =   {898--911}
+}
+
+@Article{Brown12,
+ author = {W. M. Brown, A. Kohlmeyer, S. J. Plimpton, A. N. Tharrington},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers - Particle-Particle Particle-Mesh},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2012,
+ volume =  183,
+ pages =   {449--459}
+}
+
+@Article{Brown13,
+ author = {W. M. Brown, Y. Masako},
+ title = {Implementing Molecular Dynamics on Hybrid High Performance Computers – Three-Body Potentials},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2013,
+ volume =  184,
+ pages =   {2785--2793}
+}
+
+@Article{Trung15,
+ author = {T. D. Nguyen, S. J. Plimpton},
+ title = {Accelerating dissipative particle dynamics simulations for soft matter systems},
+ journal = {Comput.~Mater.~Sci.},
+ year =    2015,
+ volume =  100,
+ pages =   {173--180}
+}
+
+@Article{Trung17,
+ author = {T. D. Nguyen},
+ title = {GPU-accelerated Tersoff potentials for massively parallel Molecular Dynamics simulations},
+ journal = {Comp.~Phys.~Comm.},
+ year =    2017,
+ volume =  212,
+ pages =   {113--122}
+}
+
+@Article{Nikolskiy19,
+ author = {V. Nikolskiy, V. Stegailov},
+ title = {GPU acceleration of four-site water models in LAMMPS},
+ journal = {Proceeding of the International Conference on Parallel Computing (ParCo 2019), Prague, Czech Republic},
+ year =    2019
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.9
+  ghost atom cutoff = 8.9
+  binsize = 4.45, bins = 12 12 12
+  0 neighbor lists, perpetual/occasional/extra = 0 0 0
+Per MPI rank memory allocation (min/avg/max) = 7.699 | 7.699 | 7.699 Mbytes
+   Step          Temp          PotEng         TotEng         Press          Volume           Lx             Ly             Lz      
+         0   854.4078      -55910.557     -54906.981      1325.7543      123606.22      49.813468      49.813468      49.813468    
+   1000000   862.65208     -55859.187     -54845.927      2638.2887      123606.22      49.813468      49.813468      49.813468    
+   2000000   851.63483     -55880.809     -54880.49       1592.2064      123606.22      49.813468      49.813468      49.813468    
+   3000000   859.24006     -55869.158     -54859.906      2456.7338      123606.22      49.813468      49.813468      49.813468    
+   4000000   841.8205      -55879.066     -54890.274      2294.6753      123606.22      49.813468      49.813468      49.813468    
+   5000000   855.96634     -55877.441     -54872.034      1558.8698      123606.22      49.813468      49.813468      49.813468    
+   6000000   852.04866     -55880.018     -54879.212      1686.8595      123606.22      49.813468      49.813468      49.813468    
+   7000000   840.56392     -55884.094     -54896.778      1393.508       123606.22      49.813468      49.813468      49.813468    
+   8000000   858.86926     -55891.633     -54882.817      1920.0432      123606.22      49.813468      49.813468      49.813468    
+   9000000   849.75526     -55895.99      -54897.878      1776.688       123606.22      49.813468      49.813468      49.813468    
+  10000000   841.8441      -55876.477     -54887.658      2146.1955      123606.22      49.813468      49.813468      49.813468    
+  11000000   859.67416     -55897.936     -54888.174      1140.0205      123606.22      49.813468      49.813468      49.813468    
+  12000000   860.34231     -55886.563     -54876.016      2752.72        123606.22      49.813468      49.813468      49.813468    
+  13000000   850.08211     -55887.521     -54889.026      1685.8266      123606.22      49.813468      49.813468      49.813468    
+  14000000   842.73363     -55879.626     -54889.762      1398.3832      123606.22      49.813468      49.813468      49.813468    
+  15000000   848.2575      -55873.516     -54877.164      1659.1862      123606.22      49.813468      49.813468      49.813468    
+  16000000   856.59643     -55865.966     -54859.819      2340.8113      123606.22      49.813468      49.813468      49.813468    
+  17000000   846.14122     -55871.751     -54877.885      1491.0807      123606.22      49.813468      49.813468      49.813468    
+  18000000   841.3747      -55882.61      -54894.342      1616.275       123606.22      49.813468      49.813468      49.813468    
+  19000000   846.85179     -55891.983     -54897.282      1850.5276      123606.22      49.813468      49.813468      49.813468    
+  20000000   853.94596     -55868.464     -54865.43       1860.3117      123606.22      49.813468      49.813468      49.813468    
+  21000000   855.72621     -55865.314     -54860.189      1378.9975      123606.22      49.813468      49.813468      49.813468    
+  22000000   848.80672     -55866.559     -54869.561      1639.5286      123606.22      49.813468      49.813468      49.813468    
+  23000000   856.27174     -55870.741     -54864.976      1471.9829      123606.22      49.813468      49.813468      49.813468    
+  24000000   850.43561     -55881.69      -54882.78       2039.5025      123606.22      49.813468      49.813468      49.813468    
+  25000000   860.52385     -55886.075     -54875.315      1461.894       123606.22      49.813468      49.813468      49.813468    
+  26000000   854.61215     -55875.827     -54872.011      1950.3965      123606.22      49.813468      49.813468      49.813468    
+  27000000   856.96384     -55884.95      -54878.371      1478.475       123606.22      49.813468      49.813468      49.813468    
+  28000000   840.16513     -55883.107     -54896.26       1381.1101      123606.22      49.813468      49.813468      49.813468    
+  29000000   849.48395     -55879.786     -54881.993      2046.0106      123606.22      49.813468      49.813468      49.813468    
+  30000000   850.40833     -55883.67      -54884.791      2208.7372      123606.22      49.813468      49.813468      49.813468    
+  31000000   853.3857      -55897.098     -54894.722      1892.9807      123606.22      49.813468      49.813468      49.813468    
+  32000000   856.80071     -55900.632     -54894.245      2118.655       123606.22      49.813468      49.813468      49.813468    
+  33000000   851.12915     -55870.334     -54870.609      2751.5349      123606.22      49.813468      49.813468      49.813468    
+  34000000   842.42428     -55889.606     -54900.106      1930.006       123606.22      49.813468      49.813468      49.813468    
+  35000000   854.3686      -55899.111     -54895.581      1170.1243      123606.22      49.813468      49.813468      49.813468    
+  36000000   853.23745     -55892.569     -54890.367      1561.2748      123606.22      49.813468      49.813468      49.813468    
+  37000000   855.39842     -55898.628     -54893.889      1827.5035      123606.22      49.813468      49.813468      49.813468    
+  38000000   852.90342     -55882.766     -54880.957      1764.6918      123606.22      49.813468      49.813468      49.813468    
+  39000000   850.35835     -55905.29      -54906.47       1284.9038      123606.22      49.813468      49.813468      49.813468    
+  40000000   859.68308     -55892.908     -54883.135      1772.2856      123606.22      49.813468      49.813468      49.813468    
+  41000000   838.29719     -55892.471     -54907.818      1067.8219      123606.22      49.813468      49.813468      49.813468    
+  42000000   858.18006     -55876.896     -54868.889      1257.4818      123606.22      49.813468      49.813468      49.813468    
+  43000000   834.80257     -55890.643     -54910.095      1754.8984      123606.22      49.813468      49.813468      49.813468    
+  44000000   846.39798     -55876.061     -54881.893      1615.1952      123606.22      49.813468      49.813468      49.813468    
+  45000000   853.30331     -55868.419     -54866.14       2730.1188      123606.22      49.813468      49.813468      49.813468    
+  46000000   847.47953     -55876.61      -54881.171      1845.949       123606.22      49.813468      49.813468      49.813468    
+  47000000   847.46389     -55873.186     -54877.766      1647.836       123606.22      49.813468      49.813468      49.813468    
+  48000000   848.31693     -55878.72      -54882.298      1094.8914      123606.22      49.813468      49.813468      49.813468    
+  49000000   834.66119     -55879.511     -54899.129      2336.0274      123606.22      49.813468      49.813468      49.813468    
