@@ -1,0 +1,9 @@
+LAMMPS (8 Feb 2023)
+  using 1 OpenMP thread(s) per MPI task
+package intel 1
+#MD-DMS by Ha-Bin Yu
+
+#package gpu 1 gpuID  0
+variable T equal 890
+log log.${T}
+log log.890
