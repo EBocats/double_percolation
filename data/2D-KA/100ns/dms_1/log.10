@@ -1,0 +1,84 @@
+variable TLJ equal (${T}/1000)
+variable TLJ equal (10/1000)
+variable NCyle equal 5
+variable iStep equal (${f})
+variable iStep equal (100000)
+variable dumpStep equal (${f}*100)
+variable dumpStep equal (100000*100)
+variable runStep equal (${f}*100*${NCyle})
+variable runStep equal (100000*100*${NCyle})
+variable runStep equal (100000*100*5)
+
+units       lj
+atom_style  atomic
+dimension 2
+boundary     p p p
+pair_style  lj/cut 2.5
+read_data ../../../data/data.T${T}
+read_data ../../../data/data.T10
+Reading data file ...
+  orthogonal box = (0 0 -0.12909944) to (77.459667 77.459667 0.12909944)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  7200 atoms
+  read_data CPU = 0.011 seconds
+change_box all triclinic
+Changing box ...
+  triclinic box = (0 0 -0.12909944) to (77.459667 77.459667 0.12909944) with tilt (0 0 0)
+mass 1 1
+mass 2 1
+pair_modify shift yes
+pair_coeff  1 1 1 1
+pair_coeff  1 2 1.5 0.8
+pair_coeff  2 2 0.5 0.88
+
+velocity all create ${TLJ} ${R}
+velocity all create 0.01 ${R}
+velocity all create 0.01 4388051
+
+timestep 0.01
+thermo ${iStep}
+thermo 100000
+reset_timestep 0
+thermo_style custom step temp pe etotal press vol lx ly lz
+fix             1 all nvt temp ${TLJ}  ${TLJ}  0.1
+fix             1 all nvt temp 0.01  ${TLJ}  0.1
+fix             1 all nvt temp 0.01  0.01  0.1
+thermo_modify flush yes
+
+fix dsf all deform 1 xy  wiggle 1.0  ${f}   units box
+fix dsf all deform 1 xy  wiggle 1.0  100000   units box
+fix ps1 all ave/time 1 1 ${iStep} c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 1 100000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.${T}
+fix ps1 all ave/time 1 1 100000 c_thermo_press[1] c_thermo_press[2]  c_thermo_press[3] c_thermo_press[4]  c_thermo_press[5] c_thermo_press[6]  file  stress.10
+dump            1 all custom ${dumpStep} dump.${T} id type x y z
+dump            1 all custom 10000000 dump.${T} id type x y z
+dump            1 all custom 10000000 dump.10 id type x y z
+dump_modify 1 sort id
+fix nodrift all momentum 1  linear 1 1 1
+fix com_seed all recenter INIT INIT INIT shift all
+fix 5 all enforce2d
+run ${runStep}
+run 50000000
+----------------------------------------------------------
+Using INTEL Package without Coprocessor.
+Compiler: Intel Classic C++ 20.21.6 / Intel(R) C++ g++ 4.8.5 mode
+SIMD compiler directives: Enabled
+Precision: mixed
+----------------------------------------------------------
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 2.8
+  ghost atom cutoff = 2.8
+  binsize = 1.4, bins = 56 56 1
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut/intel, perpetual
+      attributes: half, newton on, intel
+      pair build: half/bin/newton/tri/intel
+      stencil: half/bin/2d/tri
+      bin: intel
+Per MPI rank memory allocation (min/avg/max) = 66.15 | 66.15 | 66.15 Mbytes
+   Step          Temp          PotEng         TotEng         Press          Volume           Lx             Ly             Lz      
+         0   0.01          -3.8403309     -3.8303323      2.0397026      6000           77.459667      77.459667      0.25819889   
