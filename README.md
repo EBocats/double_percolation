@@ -26,5 +26,6 @@ Workflows:
 
 ## If the data and code are used, please cite our paper.
 Paper: Gao, L., Yu, HB., Schrøder, T.B. et al. Unified percolation scenario for the α and β processes in simple glass formers. Nat. Phys. 21, 471–479 (2025). https://doi.org/10.1038/s41567-024-02762-z
+
 Data and Code: Gao, L. (2024). Data and code of "Unified percolation scenario for the α and β processes in simple glass formers [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14060575
 
